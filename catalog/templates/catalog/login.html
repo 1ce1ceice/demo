@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Вход</title>
+
+  <link rel="icon" href="/static/favicon.ico">
+
+  <style>
+    :root{
+      --bg:#f6f6f6;
+      --card:#ffffff;
+      --border:#dddddd;
+      --text:#222;
+      --muted:#666;
+      --btn:#2E8B57;
+      --btnText:#fff;
+    }
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 24px;
+    }
+    .wrap{
+      width: 420px;
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom: 10px;
+    }
+    .logo img{
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      border-radius: 10px;
+      background:#fff;
+      border:1px solid var(--border);
+      padding: 6px;
+    }
+    h1{
+      font-size: 22px;
+      margin: 0;
+    }
+    .subtitle{
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .err{
+      background:#ffe9e9;
+      border:1px solid #ffb3b3;
+      color:#b00000;
+      padding:10px;
+      border-radius:10px;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+    label{
+      display:block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+    input{
+      width:100%;
+      padding: 10px 12px;
+      border:1px solid var(--border);
+      border-radius: 10px;
+      outline:none;
+      font-size: 14px;
+      box-sizing:border-box;
+      background:#fff;
+    }
+    input:focus{
+      border-color: #9ac7b0;
+      box-shadow: 0 0 0 3px rgba(46,139,87,0.12);
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      margin-top: 16px;
+      align-items:center;
+    }
+    .btn{
+      border:none;
+      background: var(--btn);
+      color: var(--btnText);
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor:pointer;
+      font-weight: 700;
+    }
+    .btn:hover{ filter: brightness(0.95); }
+    .link{
+      font-size: 14px;
+      color:#2b6cb0;
+      text-decoration:none;
+      font-weight: 600;
+    }
+    .link:hover{ text-decoration:underline; }
+    .footer{
+      text-align:center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="logo">
+        <img src="/static/logo.png" alt="Логотип">
+        <div>
+          <h1>Вход</h1>
+          <div class="subtitle">Введите логин и пароль или продолжите как гость</div>
+        </div>
+      </div>
+
+      {% if error %}
+        <div class="err">{{ error }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <label>Логин</label>
+        <input name="username" required>
+
+        <label>Пароль</label>
+        <input type="password" name="password" required>
+
+        <div class="row">
+          <button class="btn" type="submit">Войти</button>
+          <a class="link" href="{% url 'guest' %}">Войти как гость</a>
+        </div>
+      </form>
+    </div>

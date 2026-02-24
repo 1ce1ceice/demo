@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Список товаров</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f6f6f6; margin:0; }
+    .header {
+      background:#ffffff; border-bottom:1px solid #ddd;
+      padding:12px 18px; display:flex; align-items:center; justify-content:space-between;
+      position: sticky; top:0;
+    }
+    .brand { font-size:18px; font-weight:700; }
+    .who { text-align:right; font-size:13px; }
+    .who a { display:inline-block; margin-top:4px; }
+
+    .container { max-width: 1100px; margin: 18px auto; padding: 0 14px; }
+    .meta { font-size: 13px; color:#333; }
+
+    .filters { background:#fff; border:1px solid #ddd; padding:10px; border-radius:8px; margin-bottom:12px; }
+    .filters input, .filters select { padding:6px; }
+
+    .card {
+      background:#fff; border:1px solid #ddd; border-radius:10px;
+      margin-bottom:12px; padding:12px;
+      display:grid; grid-template-columns: 110px 1fr 140px; gap:12px;
+      align-items: start;
+    }
+    .img { width:110px; height:110px; background:#eee; border-radius:8px; overflow:hidden; }
+    .img img { width:100%; height:100%; object-fit:cover; }
+
+    .title { font-weight:700; font-size:16px; margin-bottom:6px; }
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:6px; }
+
+    .badge { font-weight:700; padding:6px 10px; border-radius:8px; display:inline-block; }
+    .disc { background:#eee; }
+    .disc.big { background:#2E8B57; color:white; }
+
+    .stock0 { background:#9fd3ff; }
+    .discRow.bigdisc { background:#2E8B57; color:white; border-radius:10px; }
+
+    .oldprice { text-decoration: line-through; color:red; display:block; }
+    .final { font-weight:700; font-size:18px; display:block; margin-top:4px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="brand">Список товаров</div>
+    <div class="who">
+      👤 <b>{{ full_name }}</b><br>
+      <span class="meta">Роль: {{ role }}</span><br>
+      <a href="{% url 'logout' %}">Выйти</a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    {% if can_advanced %}
+    <div class="filters">
+      <form method="get">
+        <input name="search" placeholder="Поиск..." value="{{ search }}">
+        <input name="category" placeholder="Категория..." value="{{ category }}">
+        <select name="sort">
+          <option value="">Сортировка</option>
+          <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Цена ↑</option>
+          <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Цена ↓</option>
+          <option value="discount_desc" {% if sort == 'discount_desc' %}selected{% endif %}>Скидка ↓</option>
+        </select>
+        <button type="submit">Применить</button>
+      </form>
+    </div>
+    {% endif %}
+
+    {% for p in products %}
+      <div class="card {% if p.stock_qty == 0 %}stock0{% endif %} {% if p.discount_percent > 15 %}discRow bigdisc{% endif %}">
+        <div class="img">
+          {% if p.image %}
+            <img src="{{ p.image.url }}">
+          {% else %}
+            <img src="/static/picture.png">
+          {% endif %}
+        </div>
+
+        <div>
+          <div class="title">{{ p.category.name }} | {{ p.name }}</div>
+
+          <div class="grid2 meta">
+            <div><b>Описание:</b> {{ p.description }}</div>
+            <div><b>Ед. изм.:</b> {{ p.unit.name }}</div>
+
+            <div><b>Производитель:</b> {{ p.manufacturer.name }}</div>
+            <div><b>Кол-во на складе:</b> {{ p.stock_qty }}</div>
+
+            <div><b>Поставщик:</b> {{ p.supplier.name }}</div>
+          </div>
+        </div>
+
+        <div style="text-align:right;">
+          <div class="badge {% if p.discount_percent > 15 %}big{% else %}disc{% endif %}">
+            Скидка: {{ p.discount_percent }}%
+          </div>
+
+          <div style="margin-top:10px;">
+            {% if p.discount_percent > 0 %}
+              <span class="oldprice">{{ p.price }}</span>
+              <span class="final">{{ p.final_price|floatformat:2 }}</span>
+            {% else %}
+              <span class="final">{{ p.price }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div style="padding:14px; background:#fff; border:1px solid #ddd; border-radius:10px;">
+        Товаров пока нет. Создай тестовые: <code>python manage.py seed_demo</code>
+      </div>
+    {% endfor %}
+
+  </div>
+</body>
+</html>
